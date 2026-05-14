@@ -29,19 +29,33 @@ This project addresses those issues by implementing a scalable cloud-based archi
 # Architecture Overview
 
 API-Football
+
 ↓
+
 Amazon EC2 (Python Scripts)
+
 ↓
+
 Amazon S3 - Bronze Layer
+
 ↓
+
 AWS Glue (Spark ETL)
+
 ↓
+
 Amazon S3 - Silver Layer
+
 ↓
+
 Amazon Athena (SQL Analytics)
+
 ↓
+
 Amazon S3 - Gold Layer
+
 ↓
+
 Performance Metrics & Analysis
 
 ---
