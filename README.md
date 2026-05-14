@@ -20,7 +20,7 @@ Build a scalable data pipeline capable of:
 ---
 
 # Architecture Overview
-
+<img width="1535" height="1024" alt="image" src="https://github.com/user-attachments/assets/b2a3bb67-1a15-48d5-8fda-d54b16c35561" />
 API-Football
 
 ↓
