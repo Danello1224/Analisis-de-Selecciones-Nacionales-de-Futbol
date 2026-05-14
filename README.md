@@ -125,7 +125,7 @@ Sports data provider used to retrieve:
 | AWS Glue | ETL processing |
 | Apache Spark | Data transformation |
 | Amazon Athena | SQL analytics |
-| Parquet |
+| Parquet | Analytical optimization |
 
 ---
 
