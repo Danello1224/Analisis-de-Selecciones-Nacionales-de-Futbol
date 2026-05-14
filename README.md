@@ -21,35 +21,6 @@ Build a scalable data pipeline capable of:
 
 # Architecture Overview
 <img width="1535" height="1024" alt="image" src="https://github.com/user-attachments/assets/b2a3bb67-1a15-48d5-8fda-d54b16c35561" />
-API-Football
-
-↓
-
-Amazon EC2 (Python Scripts)
-
-↓
-
-Amazon S3 - Bronze Layer
-
-↓
-
-AWS Glue (Spark ETL)
-
-↓
-
-Amazon S3 - Silver Layer
-
-↓
-
-Amazon Athena (SQL Analytics)
-
-↓
-
-Amazon S3 - Gold Layer
-
-↓
-
-Performance Metrics & Analysis
 
 ---
 
