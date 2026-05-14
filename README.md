@@ -19,13 +19,6 @@ Build a scalable data pipeline capable of:
 
 ---
 
-# Project Context
-
-Modern sports analysis increasingly depends on data-driven decision making.
-This project addresses those issues by implementing a scalable cloud-based architecture using AWS services.
-
----
-
 # Architecture Overview
 
 API-Football
