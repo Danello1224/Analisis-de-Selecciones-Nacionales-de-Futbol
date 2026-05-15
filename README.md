@@ -1,4 +1,4 @@
-# football-soccer-data-engineering-project
+# Football soccer data engineering project
 
 Football National Teams Data Lake & Analytics Pipeline:
 
