@@ -91,22 +91,6 @@ Sports data provider used to retrieve:
 
 ---
 
-# Technologies Used
-
-| Technology | Purpose |
-|---|---|
-| Python | Data ingestion scripts |
-| Requests | API consumption |
-| CSV | Dataset generation |
-| Amazon EC2 | Script execution |
-| Amazon S3 | Data Lake storage |
-| AWS Glue | ETL processing |
-| Apache Spark | Data transformation |
-| Amazon Athena | SQL analytics |
-| Parquet | Analytical optimization |
-
----
-
 # Data Ingestion
 
 Python scripts are responsible for:
@@ -160,13 +144,25 @@ Metrics are generated using SQL queries in Amazon Athena.
 
 ## Future Improvements
 - Analytical dashboards
-- Fully serverless architecture
-- Predictive sports models
 - Advanced opponent comparison analysis
 
 ---
+# Technologies Used
 
-# Academic and Professional Purpose
+| Technology | Purpose |
+|---|---|
+| Python | Data ingestion scripts |
+| Requests | API consumption |
+| CSV | Dataset generation |
+| Amazon EC2 | Script execution |
+| Amazon S3 | Data Lake storage |
+| AWS Glue | ETL processing |
+| Apache Spark | Data transformation |
+| Amazon Athena | SQL analytics |
+| Parquet | Analytical optimization |
+---
+
+# Professional Purpose
 
 This project aims to apply real-world concepts related to:
 
