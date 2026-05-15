@@ -20,7 +20,7 @@ Build a scalable data pipeline capable of:
 ---
 
 # Architecture Overview
-<img width="1024" height="698" alt="image" src="https://github.com/user-attachments/assets/0a6648fa-9dd7-4b3d-92ce-c7227554e59b" />
+<img width="1024" height="698" alt="image" src="https://github.com/user-attachments/assets/c2fb8234-2e95-481a-9771-ba5769612c83" />
 
 ---
 
