@@ -24,56 +24,6 @@ Build a scalable data pipeline capable of:
 
 ---
 
-# Layered Architecture
-
-## Bronze Layer
-
-Stores raw data obtained directly from the API.
-
-### Characteristics
-- CSV format
-- Unprocessed/raw data
-- Organized by national team
-- Historical storage
-
----
-
-## Silver Layer
-
-Contains processed and cleaned datasets.
-
-Data quality rules and transformations are applied using Spark jobs in AWS Glue.
-
-### Transformations Applied
-- Null value removal
-- Goal validation
-- Name standardization
-- Data type conversion
-- Duplicate removal
-- Year-based partitioning
-
-### Format
-- Parquet
-- Optimized for analytical workloads
-
----
-
-## Gold Layer
-
-Analytical layer focused on business and football performance metrics.
-
-Data is queried using SQL through Amazon Athena.
-
-### Metrics Generated
-- Win rate
-- Average goals scored
-- Average goals conceded
-- Opponent performance analysis
-- Tournament performance analysis
-- Yearly trends
-
----
-
 # Data Source
 
 The project uses:
@@ -107,24 +57,21 @@ Python scripts are responsible for:
 - Czech Republic
 
 ---
+# Technologies Used
 
-# Data Quality
-
-During the Bronze → Silver transition, several quality rules are applied:
-
-- Removal of incomplete records
-- Goal validation (0–20 range)
-- Column consistency validation
-- Team name standardization
-- Duplicate removal
-
-These rules ensure reliable and analysis-ready datasets.
+| Technology | Purpose |
+|---|---|
+| Python | Data ingestion scripts |
+| Requests | API consumption |
+| CSV | Dataset generation |
+| Amazon EC2 | Script execution |
+| Amazon S3 | Data Lake storage |
+| AWS Glue | ETL processing |
+| Apache Spark | Data transformation |
+| Amazon Athena | SQL analytics |
+| Parquet | Analytical optimization |
 
 ---
-
-# Analytical Queries
-
-Metrics are generated using SQL queries in Amazon Athena.
 
 # Current Project Status
 
@@ -147,20 +94,7 @@ Metrics are generated using SQL queries in Amazon Athena.
 - Advanced opponent comparison analysis
 
 ---
-# Technologies Used
 
-| Technology | Purpose |
-|---|---|
-| Python | Data ingestion scripts |
-| Requests | API consumption |
-| CSV | Dataset generation |
-| Amazon EC2 | Script execution |
-| Amazon S3 | Data Lake storage |
-| AWS Glue | ETL processing |
-| Apache Spark | Data transformation |
-| Amazon Athena | SQL analytics |
-| Parquet | Analytical optimization |
----
 
 # Professional Purpose
 
