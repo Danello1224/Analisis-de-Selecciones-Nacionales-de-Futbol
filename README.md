@@ -171,6 +171,7 @@ The dashboard was developed using HTML and AI-assisted development tools.
 ```text
 project-root/
 ├── dashboard/
+├── deploy/
 ├── docs/
 ├── img/
 ├── ppt/
