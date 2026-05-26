@@ -145,7 +145,7 @@ The dashboard includes:
 - Opponent analysis
 - Dynamic football metrics visualization
 
-The dashboard was developed using HTML and AI-assisted development tools.
+The dashboard was developed using HTML5, CSS3, JavaScript (Vanilla ES6) and AI-assisted development tools.
 
 ---
 
@@ -162,7 +162,7 @@ The dashboard was developed using HTML and AI-assisted development tools.
 | PySpark | Distributed data transformation |
 | Amazon Athena | SQL analytics |
 | Parquet | Query optimization and partitioned storage |
-| HTML | Dashboard development |
+| HTML5 - CSS3 - JavaScript (Vanilla ES6) | Dashboard development |
 
 ---
 
