@@ -139,11 +139,11 @@ A football scouting dashboard was developed to visualize the analytical metrics 
 
 The dashboard includes:
 
-- National team statistics
-- Match performance indicators
-- Historical comparisons
-- Opponent analysis
-- Dynamic football metrics visualization
+- National team statistics.
+- Match performance indicators.
+- Historical comparisons.
+- Opponent analysis.
+- Dynamic football metrics visualization.
 
 The dashboard was developed using HTML5, CSS3, JavaScript (Vanilla ES6) and AI-assisted development tools.
 
