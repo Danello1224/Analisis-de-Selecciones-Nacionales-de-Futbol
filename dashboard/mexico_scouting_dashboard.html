@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mexico NT — Scouting Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+
+  /* Base */
+  --bg:#0b1117;
+  --surface:#131b24;
+  --surface2:#18222d;
+
+  /* UI */
+  --border:rgba(255,255,255,0.06);
+
+  /* Accent Colors */
+  --accent:#00c27a;
+  --accent3:#d65b5b;
+
+  /* Typography */
+  --text:#eef3f8;
+  --muted:#6b7a8f;
+  --muted2:#9aa7b8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);
+
+  background-size:48px 48px;
+
+  pointer-events:none;
+  z-index:0;
+}
+.wrapper{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:40px 24px 80px;}
+
+/* HEADER */
+header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;flex-wrap:wrap;gap:16px;}
+.eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.2em;color:var(--accent);text-transform:uppercase;margin-bottom:8px;}
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,72px);letter-spacing:0.04em;line-height:0.9;color:#fff;}
+h1 span{color:var(--accent);}
+.subtitle{margin-top:10px;color:var(--muted2);font-size:13px;font-weight:300;letter-spacing:0.03em;}
+.badge{background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.25);color:var(--accent);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.15em;padding:6px 14px;border-radius:2px;text-transform:uppercase;}
+
+/* MODE TOGGLE */
+.mode-toggle{display:flex;margin-bottom:28px;border:1px solid var(--border);border-radius:3px;overflow:hidden;width:fit-content;}
+.mode-btn{padding:9px 24px;background:transparent;color:var(--muted2);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;border:none;transition:all 0.2s;}
+.mode-btn.active{background:var(--accent);color:#000;font-weight:500;}
+.mode-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,0.05);}
+
+/* SELECTOR */
+.selector-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px;}
+.selector-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;white-space:nowrap;}
+.team-btn{position:relative;padding:10px 22px;border:1px solid var(--border);background:var(--surface);color:var(--muted2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border-radius:2px;overflow:hidden;}
+.team-btn::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--tc,var(--accent));transform:scaleX(0);transition:transform 0.2s;}
+.team-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.15);}
+.team-btn:hover::before{transform:scaleX(1);}
+.team-btn.active{
+  color:#fff;
+  border-color:var(--tc,var(--accent));
+  background:rgba(255,255,255,0.03);
+
+  box-shadow:
+    0 0 18px rgba(0,194,122,0.12);
+
+  backdrop-filter:blur(4px);
+}
+.team-btn.active::before{transform:scaleX(1);}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:32px;}
+.kpi-card{
+  background:linear-gradient(
+    180deg,
+    rgba(255,255,255,0.015),
+    rgba(255,255,255,0.005)
+  );
+
+  border:1px solid var(--border);
+
+  border-radius:8px;
+
+  padding:20px 18px;
+
+  position:relative;
+  overflow:hidden;
+
+  backdrop-filter:blur(10px);
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease;
+}
+
+.kpi-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(255,255,255,0.12);
+}
+.kpi-card::after{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+
+  background:var(--tc,var(--accent));
+
+  opacity:0.75;
+
+  box-shadow:
+    0 0 14px var(--tc,var(--accent));
+}
+.kpi-label{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.kpi-value{font-family:'Bebas Neue',sans-serif;font-size:38px;line-height:1;color:#fff;}
+.kpi-sub{margin-top:6px;font-size:11px;color:var(--muted2);font-weight:300;}
+
+/* CARDS */
+.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+@media(max-width:760px){.main-grid{grid-template-columns:1fr;}}
+.card{
+  background:linear-gradient(
+    180deg,
+    rgba(255,255,255,0.015),
+    rgba(255,255,255,0.005)
+  );
+
+  border:1px solid var(--border);
+
+  border-radius:8px;
+
+  padding:24px;
+
+  backdrop-filter:blur(10px);
+
+  transition:
+    border-color .2s ease,
+    transform .2s ease;
+}
+
+.card:hover{
+  border-color:rgba(255,255,255,0.1);
+}
+.card-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.18em;color:var(--muted);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.card-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* RING */
+.result-ring-wrap{display:flex;align-items:center;gap:32px;flex-wrap:wrap;}
+.ring-container{position:relative;width:140px;height:140px;flex-shrink:0;}
+.ring-container svg{transform:rotate(-90deg);}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-pct{font-family:'Bebas Neue',sans-serif;font-size:34px;color:#fff;line-height:1;}
+.ring-pct-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;}
+.result-breakdown{flex:1;min-width:160px;display:flex;flex-direction:column;gap:14px;}
+.result-row{display:flex;flex-direction:column;gap:5px;}
+.result-row-header{display:flex;justify-content:space-between;}
+.result-name{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;}
+.result-count{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;}
+.bar-track{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:2px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);}
+
+/* GOALS */
+.goals-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.goal-stat{display:flex;flex-direction:column;gap:4px;}
+.goal-big{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;}
+.goal-tag{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;}
+.goal-avg{font-size:12px;color:var(--muted2);margin-top:2px;}
+
+/* HBARS */
+.hbar-list{display:flex;flex-direction:column;gap:14px;}
+.hbar-header{display:flex;justify-content:space-between;margin-bottom:5px;}
+.hbar-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;}
+.hbar-val{font-family:'DM Mono',monospace;font-size:11px;color:#fff;}
+.hbar-track{height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;}
+.hbar-fill{height:100%;border-radius:3px;transition:width 0.9s cubic-bezier(0.4,0,0.2,1);}
+
+/* COMP TABLE */
+.comp-table{width:100%;border-collapse:collapse;}
+.comp-table th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;text-align:left;padding:0 12px 14px 0;border-bottom:1px solid var(--border);}
+.comp-table th:not(:first-child){text-align:right;}
+.comp-table td{padding:12px 12px 12px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px;color:var(--text);vertical-align:middle;}
+.comp-table td:not(:first-child){text-align:right;font-family:'DM Mono',monospace;font-size:12px;}
+.comp-table tr.highlighted td{background:rgba(0,212,170,0.04);}
+.team-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;}
+.team-name-cell{display:flex;align-items:center;font-weight:500;}
+.best{color:var(--accent);font-weight:500;}
+.worst{color:var(--accent3);}
+
+/* ===== COMPARE MODE ===== */
+.compare-selectors{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:36px;}
+@media(max-width:600px){.compare-selectors{grid-template-columns:1fr;}}
+.compare-col-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.col-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.compare-teams{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* VERSUS HEADER */
+.versus-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;margin-bottom:24px;padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:4px;}
+.vs-team{display:flex;flex-direction:column;gap:6px;}
+.vs-team.right{align-items:flex-end;}
+.vs-flag{font-size:36px;line-height:1;}
+.vs-name{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.05em;line-height:1;}
+.vs-adv{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 10px;border-radius:2px;width:fit-content;}
+.vs-divider{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--muted);letter-spacing:0.1em;text-align:center;}
+
+/* DUEL */
+.duel-list{display:flex;flex-direction:column;}
+.duel-row{display:grid;grid-template-columns:1fr 140px 1fr;align-items:center;gap:16px;padding:18px 0;border-bottom:1px solid var(--border);}
+.duel-row:last-child{border-bottom:none;}
+.duel-side{display:flex;flex-direction:column;gap:6px;}
+.duel-side.right{align-items:flex-end;}
+.duel-side.right .duel-bar-track{width:100%;}
+.duel-val{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:#fff;}
+.duel-bar-track{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
+.duel-bar-fill{height:100%;border-radius:3px;transition:width 0.9s cubic-bezier(0.4,0,0.2,1);}
+.duel-center{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.duel-metric-name{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;text-align:center;line-height:1.4;}
+.duel-winner-dot{width:8px;height:8px;border-radius:50%;}
+.edge-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:2px;}
+
+/* SUMMARY */
+.summary-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
+@media(max-width:600px){.summary-row{grid-template-columns:1fr;}}
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px 22px;}
+.summary-team-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.05em;margin-bottom:12px;}
+.summary-stat-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+.summary-stat-row:last-child{border-bottom:none;}
+.summary-stat-key{color:var(--muted2);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;}
+.summary-stat-val{font-family:'DM Mono',monospace;color:#fff;font-size:11px;}
+
+/* FOOTER */
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.footer-note{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;}
+html{
+  scroll-behavior:smooth;
+}
+
+::selection{
+  background:rgba(0,194,122,0.25);
+  color:#fff;
+}
+
+::-webkit-scrollbar{
+  width:10px;
+}
+
+::-webkit-scrollbar-track{
+  background:#0b1117;
+}
+
+::-webkit-scrollbar-thumb{
+  background:#1d2a38;
+  border-radius:20px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background:#2a3a4b;
+}
+</style>
+</head>
+<body>
+<div class="wrapper" id="app">
+
+  <header>
+    <div class="header-left">
+      <div class="eyebrow">⬡ Mexico NT — Technical Staff</div>
+      <h1>SCOUTING<br/><span>DASHBOARD</span></h1>
+      <p class="subtitle">Historical data · Aug 2022 – present · Gold Layer</p>
+    </div>
+    <div class="badge">Data Lake / Gold</div>
+  </header>
+
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btnOverview" onclick="setMode('overview')">Overview</button>
+    <button class="mode-btn" id="btnCompare" onclick="setMode('compare')">Head-to-Head</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div id="overviewView">
+    <div class="selector-row">
+      <span class="selector-label">Select Team</span>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;" id="overviewSelector"></div>
+    </div>
+    <div class="kpi-grid" id="kpiGrid"></div>
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-title">Match Results</div>
+        <div class="result-ring-wrap">
+          <div class="ring-container">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="58" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+              <circle id="ringWin" cx="70" cy="70" r="58" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="364.4" stroke-dashoffset="364.4"/>
+              <circle id="ringDraw" cx="70" cy="70" r="58" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="364.4" stroke-dashoffset="364.4" opacity="0.45"/>
+            </svg>
+            <div class="ring-center">
+              <div class="ring-pct" id="ringPct">0%</div>
+              <div class="ring-pct-label">Win Rate</div>
+            </div>
+          </div>
+          <div class="result-breakdown" id="resultBreakdown"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Goal Stats</div>
+        <div class="goals-grid" id="goalsGrid"></div>
+      </div>
+    </div>
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-title">Per-Match Averages</div>
+        <div class="hbar-list" id="hbarList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">All Teams Comparison</div>
+        <table class="comp-table" id="compTable"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEAD TO HEAD -->
+  <div id="compareView" style="display:none;">
+    <div style="margin-bottom:28px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+        <span style="width:10px;height:10px;border-radius:50%;background:#00c27a;display:inline-block;flex-shrink:0;"></span>
+        Mexico &nbsp;vs&nbsp;
+        <span id="dot2" style="width:10px;height:10px;border-radius:50%;background:#e83a50;display:inline-block;flex-shrink:0;"></span>
+        <span id="opponentLabel">Select opponent</span>
+      </div>
+      <div class="compare-teams" id="cSel2"></div>
+    </div>
+    <div id="compareContent"></div>
+  </div>
+
+  <footer>
+    <span class="footer-note">Source: API-Football · AWS Glue / Spark · Gold Layer</span>
+    <span class="footer-note" id="footerNote">Viewing: Mexico</span>
+  </footer>
+</div>
+
+<script>
+const TEAMS = {
+  MEX: { name:"Mexico",         flag:"🇲🇽", color:"#00c27a", matches:43, wins:21, draws:9,    losses:13, win_pct:48.84, gf:66,  ga:44, gf_avg:1.53, ga_avg:1.02 },
+  KOR: { name:"South Korea",    flag:"🇰🇷", color:"#e83a50", matches:22, wins:9,  draws:8,    losses:5,  win_pct:40.91, gf:36,  ga:26, gf_avg:1.64, ga_avg:1.18 },
+  RSA: { name:"South Africa",   flag:"🇿🇦", color:"#f0c419", matches:47, wins:19, draws:23,   losses:5,  win_pct:40.43, gf:62,  ga:37, gf_avg:1.32, ga_avg:0.79 },
+  CZE: { name:"Czech Republic", flag:"🇨🇿", color:"#e84040", matches:41, wins:19, draws:11,   losses:11, win_pct:46.34, gf:74,  ga:52, gf_avg:1.80, ga_avg:1.27 },
+  CAN: { name:"Canada",         flag:"🇨🇦", color:"#d52b1e", matches:38, wins:15, draws:10,   losses:13, win_pct:39.47, gf:48,  ga:51, gf_avg:1.26, ga_avg:1.34 },
+  QAT: { name:"Qatar",          flag:"🇶🇦", color:"#8d1b3d", matches:39, wins:16, draws:10,   losses:13, win_pct:41.03, gf:48,  ga:49, gf_avg:1.23, ga_avg:1.26 },
+  SUI: { name:"Switzerland",    flag:"🇨🇭", color:"#ff0000", matches:41, wins:17, draws:16,   losses:8,  win_pct:41.46, gf:69,  ga:48, gf_avg:1.68, ga_avg:1.17 },
+  BIH: { name:"Bosnia",         flag:"🇧🇦", color:"#002395", matches:34, wins:9,  draws:6,    losses:19, win_pct:26.47, gf:36,  ga:68, gf_avg:1.06, ga_avg:2.00 },
+  ENG: { name:"England",        flag:"🇬🇧", color:"#ffffff", matches:45, wins:29, draws:10,   losses:6,  win_pct:64.44, gf:100, ga:30, gf_avg:2.22, ga_avg:0.67 },
+  CRO: { name:"Croatia",        flag:"🇭🇷", color:"#ff0000", matches:46, wins:26, draws:13,   losses:7,  win_pct:56.52, gf:88,  ga:40, gf_avg:1.91, ga_avg:0.87 },
+  GER: { name:"Germany",        flag:"🇩🇪", color:"#ffcc00", matches:47, wins:23, draws:12,   losses:12, win_pct:48.94, gf:99,  ga:59, gf_avg:2.11, ga_avg:1.26 },
+  SWE: { name:"Sweden",         flag:"🇸🇪", color:"#006AA7", matches:38, wins:19, draws:5,    losses:14, win_pct:50.00, gf:69,  ga:58, gf_avg:1.82, ga_avg:1.53 },
+  NOR: { name:"Norway",         flag:"🇳🇴", color:"#ef2b2d", matches:33, wins:19, draws:5,    losses:9,  win_pct:57.58, gf:85,  ga:38, gf_avg:2.58, ga_avg:1.15 },
+};
+
+let currentTeam = 'MEX';
+const teamA = 'MEX'; // always Mexico
+let teamB = 'KOR';
+
+/* ── MODE SWITCH ── */
+function setMode(m) {
+  const isOverview = m === 'overview';
+  document.getElementById('overviewView').style.display = isOverview ? 'block' : 'none';
+  document.getElementById('compareView').style.display  = isOverview ? 'none'  : 'block';
+  document.getElementById('btnOverview').classList.toggle('active', isOverview);
+  document.getElementById('btnCompare').classList.toggle('active', !isOverview);
+  if (!isOverview) renderCompare();
+}
+
+/* ══════════════════════════════
+   OVERVIEW
+══════════════════════════════ */
+function buildOverviewBtns() {
+  document.getElementById('overviewSelector').innerHTML =
+    Object.entries(TEAMS).map(([code, t]) =>
+      `<button class="team-btn ${code===currentTeam?'active':''}"
+        style="--tc:${t.color}"
+        onclick="pickTeam('${code}',this)">${t.flag} ${t.name}</button>`
+    ).join('');
+}
+
+function pickTeam(code, btn) {
+  currentTeam = code;
+  document.querySelectorAll('#overviewSelector .team-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderOverview();
+}
+
+function renderOverview() {
+  const t = TEAMS[currentTeam];
+  document.getElementById('footerNote').textContent = 'Viewing: ' + t.name;
+  renderKPIs(t);
+  renderRing(t);
+  renderResults(t);
+  renderGoals(t);
+  renderHbars(t);
+  renderCompTable();
+}
+
+function renderKPIs(t) {
+  const diff = t.gf - t.ga;
+  const cards = [
+    { label:"Matches Played", value:t.matches,              sub:"Total historical" },
+    { label:"Wins",           value:t.wins,                 sub:t.win_pct+'% win rate' },
+    { label:"Goals Scored",   value:t.gf,                   sub:t.gf_avg+' per match' },
+    { label:"Goals Conceded", value:t.ga,                   sub:t.ga_avg+' per match' },
+    { label:"Goal Diff",      value:(diff>0?'+':'')+diff,   sub:"Overall" },
+  ];
+  document.getElementById('kpiGrid').innerHTML = cards.map(c =>
+    `<div class="kpi-card" style="--tc:${t.color}">
+       <div class="kpi-label">${c.label}</div>
+       <div class="kpi-value">${c.value}</div>
+       <div class="kpi-sub">${c.sub}</div>
+     </div>`
+  ).join('');
+}
+
+function renderRing(t) {
+  const C = 2 * Math.PI * 58;
+  const rw = document.getElementById('ringWin');
+  const rd = document.getElementById('ringDraw');
+  rw.style.stroke = t.color; rw.style.strokeDashoffset = C;
+  rd.style.stroke = '#5a6a80'; rd.style.strokeDashoffset = C;
+  document.getElementById('ringPct').textContent = t.win_pct + '%';
+  setTimeout(() => {
+    rw.style.transition = 'stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)';
+    rw.style.strokeDashoffset = C - (t.win_pct / 100) * C;
+    if (t.draws !== null) {
+      rd.style.transition = 'stroke-dashoffset .9s cubic-bezier(.4,0,.2,1) .2s';
+      rd.style.strokeDashoffset = C - (t.draws / t.matches) * C;
+    }
+  }, 50);
+}
+
+function renderResults(t) {
+  const rows = [
+    { label:"Wins",   count:t.wins,   color:t.color },
+    { label:"Draws",  count:t.draws,  color:"#5a6a80" },
+    { label:"Losses", count:t.losses, color:"#e84040" },
+  ].filter(r => r.count !== null);
+  document.getElementById('resultBreakdown').innerHTML = rows.map(r =>
+    `<div class="result-row">
+       <div class="result-row-header">
+         <span class="result-name">${r.label}</span>
+         <span class="result-count">${r.count}</span>
+       </div>
+       <div class="bar-track"><div class="bar-fill" style="width:${(r.count/t.matches*100).toFixed(1)}%;background:${r.color};"></div></div>
+     </div>`
+  ).join('');
+}
+
+function renderGoals(t) {
+  const diff = t.gf - t.ga;
+  document.getElementById('goalsGrid').innerHTML = `
+    <div class="goal-stat"><div class="goal-big" style="color:${t.color}">${t.gf}</div><div class="goal-tag">Goals Scored</div><div class="goal-avg">${t.gf_avg}/match</div></div>
+    <div class="goal-stat"><div class="goal-big" style="color:#e84040">${t.ga}</div><div class="goal-tag">Goals Conceded</div><div class="goal-avg">${t.ga_avg}/match</div></div>
+    <div class="goal-stat"><div class="goal-big" style="color:#fff">${diff>0?'+':''}${diff}</div><div class="goal-tag">Goal Difference</div></div>
+    <div class="goal-stat"><div class="goal-big" style="color:#fff">${(t.gf/t.ga).toFixed(2)}</div><div class="goal-tag">Goals Ratio</div><div class="goal-avg">Scored / Conceded</div></div>`;
+}
+
+function renderHbars(t) {
+  const maxGf = Math.max(...Object.values(TEAMS).map(x => x.gf_avg));
+  const maxGa = Math.max(...Object.values(TEAMS).map(x => x.ga_avg));
+  const items = [
+    { label:"Goals Scored / Match",   val:t.gf_avg, max:maxGf, color:t.color },
+    { label:"Goals Conceded / Match", val:t.ga_avg, max:maxGa, color:"#e84040" },
+    { label:"Win Rate",               val:t.win_pct, max:100,  color:t.color },
+  ];
+  document.getElementById('hbarList').innerHTML = items.map(m =>
+    `<div>
+       <div class="hbar-header"><span class="hbar-label">${m.label}</span><span class="hbar-val">${m.val}</span></div>
+       <div class="hbar-track"><div class="hbar-fill" style="width:${(m.val/m.max*100).toFixed(1)}%;background:${m.color};"></div></div>
+     </div>`
+  ).join('');
+}
+
+function renderCompTable() {
+  const cols = [
+    { key:'win_pct', label:'Win %',  hi:true  },
+    { key:'gf',      label:'GF',     hi:true  },
+    { key:'ga',      label:'GA',     hi:false },
+    { key:'gf_avg',  label:'GF/M',   hi:true  },
+    { key:'ga_avg',  label:'GA/M',   hi:false },
+  ];
+  const header = `<thead><tr><th>Team</th>${cols.map(c=>`<th>${c.label}</th>`).join('')}</tr></thead>`;
+  const tbody = Object.entries(TEAMS).map(([code, t]) => {
+    const cells = cols.map(c => {
+      const vals = Object.values(TEAMS).map(x=>x[c.key]).filter(v=>v!==null);
+      const best  = c.hi ? Math.max(...vals) : Math.min(...vals);
+      const worst = c.hi ? Math.min(...vals) : Math.max(...vals);
+      const v = t[c.key];
+      const cls = v===null?'':v===best?'best':v===worst?'worst':'';
+      return `<td class="${cls}">${v!==null?v:'—'}</td>`;
+    }).join('');
+    return `<tr class="${code===currentTeam?'highlighted':''}">
+      <td><div class="team-name-cell"><span class="team-dot" style="background:${t.color}"></span>${t.flag} ${t.name}</div></td>
+      ${cells}</tr>`;
+  }).join('');
+  document.getElementById('compTable').innerHTML = header + `<tbody>${tbody}</tbody>`;
+}
+
+/* ══════════════════════════════
+   HEAD-TO-HEAD
+══════════════════════════════ */
+function buildCompareBtns() {
+  document.getElementById('dot2').style.background = TEAMS[teamB].color;
+  document.getElementById('cSel2').innerHTML = Object.entries(TEAMS)
+    .filter(([code]) => code !== 'MEX')
+    .map(([code, t]) =>
+      `<button class="team-btn ${code===teamB?'active':''}"
+        style="--tc:${t.color}"
+        onclick="pickCompare('${code}',this)">${t.flag} ${t.name}</button>`
+    ).join('');
+}
+
+function pickCompare(code, btn) {
+  teamB = code;
+  document.getElementById('opponentLabel').textContent = TEAMS[code].name;
+  buildCompareBtns();
+  renderCompareContent();
+}
+
+function renderCompare() {
+  document.getElementById('opponentLabel').textContent = TEAMS[teamB].name;
+  buildCompareBtns();
+  renderCompareContent();
+}
+
+function renderCompareContent() {
+  const el = document.getElementById('compareContent');
+
+  if (teamA === teamB) {
+    el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--muted2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;">Select two different teams to compare.</div>`;
+    return;
+  }
+
+  const A = TEAMS[teamA];
+  const B = TEAMS[teamB];
+  document.getElementById('footerNote').textContent = `Head-to-Head: ${A.name} vs ${B.name}`;
+
+  const metrics = [
+    { key:'matches',  label:'Matches Played',        hi:true,  fmt:v=>v       },
+    { key:'wins',     label:'Wins',                   hi:true,  fmt:v=>v       },
+    { key:'win_pct',  label:'Win Rate',               hi:true,  fmt:v=>v+'%'   },
+    { key:'gf',       label:'Goals Scored',           hi:true,  fmt:v=>v       },
+    { key:'ga',       label:'Goals Conceded',         hi:false, fmt:v=>v       },
+    { key:'gf_avg',   label:'Goals Scored / Match',   hi:true,  fmt:v=>v       },
+    { key:'ga_avg',   label:'Goals Conceded / Match', hi:false, fmt:v=>v       },
+  ];
+
+  let scoreA = 0, scoreB = 0;
+  metrics.forEach(m => {
+    const va = A[m.key], vb = B[m.key];
+    if (va === null || vb === null) return;
+    if (m.hi) { if (va > vb) scoreA++; else if (vb > va) scoreB++; }
+    else       { if (va < vb) scoreA++; else if (vb < va) scoreB++; }
+  });
+
+  const versusHTML = `
+    <div class="versus-header">
+      <div class="vs-team left">
+        <div style="font-size:36px">${A.flag}</div>
+        <div class="vs-name" style="color:${A.color}">${A.name}</div>
+        <div class="vs-adv" style="color:${A.color};border:1px solid ${A.color}40;background:${A.color}15">${scoreA} advantages</div>
+      </div>
+      <div class="vs-divider">VS</div>
+      <div class="vs-team right">
+        <div style="font-size:36px">${B.flag}</div>
+        <div class="vs-name" style="color:${B.color}">${B.name}</div>
+        <div class="vs-adv" style="color:${B.color};border:1px solid ${B.color}40;background:${B.color}15">${scoreB} advantages</div>
+      </div>
+    </div>`;
+
+  const duelRows = metrics.map(m => {
+    const va = A[m.key], vb = B[m.key];
+    if (va === null || vb === null) return `
+      <div class="duel-row">
+        <div class="duel-side left"><div class="duel-val">—</div></div>
+        <div class="duel-center"><div class="duel-metric-name">${m.label}</div></div>
+        <div class="duel-side right"><div class="duel-val">—</div></div>
+      </div>`;
+    const maxVal = Math.max(va, vb) || 1;
+    const winA = m.hi ? va > vb : va < vb;
+    const winB = m.hi ? vb > va : vb < va;
+    const pctA = (va / maxVal * 100).toFixed(1);
+    const pctB = (vb / maxVal * 100).toFixed(1);
+    return `
+      <div class="duel-row">
+        <div class="duel-side left">
+          <div class="duel-val" style="color:${winA?A.color:'#fff'}">${m.fmt(va)}</div>
+          <div class="duel-bar-track"><div class="duel-bar-fill" style="width:${pctA}%;background:${A.color}"></div></div>
+          ${winA?`<span class="edge-tag" style="background:${A.color}20;color:${A.color}">▲ Edge</span>`:''}
+        </div>
+        <div class="duel-center">
+          <div class="duel-metric-name">${m.label}</div>
+          <div class="duel-winner-dot" style="background:${winA?A.color:winB?B.color:'var(--muted)'}"></div>
+        </div>
+        <div class="duel-side right">
+          <div class="duel-val" style="color:${winB?B.color:'#fff'};text-align:right">${m.fmt(vb)}</div>
+          <div class="duel-bar-track"><div class="duel-bar-fill" style="width:${pctB}%;background:${B.color}"></div></div>
+          ${winB?`<span class="edge-tag" style="background:${B.color}20;color:${B.color};align-self:flex-end">▲ Edge</span>`:''}
+        </div>
+      </div>`;
+  }).join('');
+
+  const mkSummary = t => {
+    const diff = t.gf - t.ga;
+    const rows = [
+      ['Matches',             t.matches],
+      ['Wins',                t.wins],
+      ['Draws',               t.draws ?? '—'],
+      ['Losses',              t.losses ?? '—'],
+      ['Win Rate',            t.win_pct + '%'],
+      ['Goals Scored',        t.gf],
+      ['Goals Conceded',      t.ga],
+      ['Goal Difference',     (diff>0?'+':'')+diff],
+      ['GF per Match',        t.gf_avg],
+      ['GA per Match',        t.ga_avg],
+    ];
+    return `<div class="summary-card" style="border-color:${t.color}40">
+      <div class="summary-team-name" style="color:${t.color}">${t.flag} ${t.name}</div>
+      ${rows.map(([k,v])=>`<div class="summary-stat-row"><span class="summary-stat-key">${k}</span><span class="summary-stat-val">${v}</span></div>`).join('')}
+    </div>`;
+  };
+
+  el.innerHTML =
+    versusHTML +
+    `<div class="card" style="margin-bottom:16px"><div class="card-title">Metric Duel</div><div class="duel-list">${duelRows}</div></div>` +
+    `<div class="summary-row">${mkSummary(A)}${mkSummary(B)}</div>`;
+}
+
+
+/* ── INIT ── */
+buildOverviewBtns();
+renderOverview();
+</script>
+</body>
+</html>
