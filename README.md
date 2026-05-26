@@ -3,7 +3,7 @@
 Football National Teams Data Lake & Analytics Pipeline:
 
 This project is a data engineering solution focused on analyzing national football teams through a modern AWS-based Data Lake architecture.
-The project simulates a real-world scenario where the coaching staff of a national team (in this case, Mexico) needs to analyze opponents ahead of a World Cup using historical international match data.
+The project simulates a real-world scenario where the coaching staff of a national team, in this case Mexico, needs to analyze opponents before a World Cup using historical international match data.
 
 ---
 
@@ -106,4 +106,4 @@ This project aims to apply real-world concepts related to:
 - Cloud Computing
 - Sports analytics
 
-while simulating workflows commonly used in enterprise-level data projects.
+It also simulates workflows commonly used in enterprise-level data projects.
