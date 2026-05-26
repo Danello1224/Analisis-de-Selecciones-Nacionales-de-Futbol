@@ -29,9 +29,7 @@ for team in teams:
         .option("encoding", "UTF-8") \     # ¡Punto clave! Forzamos la lectura en UTF-8 para no romper acentos (como en México)
         .csv(f"s3://{bucket}/1bronce/{team}/historico_{team}.csv") # Ruta de origen en S3
 
-    # ==========================================
     # PROCESO DE LIMPIEZA Y TIPADO DE DATOS
-    # ==========================================
     df_clean = (
         df
         .dropna(how="all") # Borramos filas que estén completamente vacías
@@ -46,9 +44,7 @@ for team in teams:
         .withColumn("goles_visitante", col("goles_visitante").cast("int")) # Convertimos los goles del visitante de texto a Número Entero (int)
     )
 
-    # ==========================================
     # APLICACIÓN DE REGLAS DE CALIDAD DE DATOS
-    # ==========================================
     df_clean = (
         df_clean
         .filter(col("fecha").isNotNull()) # Filtramos y eliminamos partidos que se hayan quedado sin fecha válida
@@ -66,9 +62,7 @@ for team in teams:
     # Imprimimos aviso en los logs indicando que comenzará la escritura optimizada
     print(f"Escribiendo datos particionados de {team} en formato Parquet...")
     
-    # ==========================================
     # GUARDADO OPTIMIZADO EN FORMATO PARQUET
-    # ==========================================
     df_clean.write \
         .mode("overwrite") \       # Si los datos ya existían en la carpeta, los sobrescribimos para no duplicar en S3
         .partitionBy("year") \     # ¡Mágico! Le ordenamos a Spark que divida físicamente los archivos en carpetas por Año
