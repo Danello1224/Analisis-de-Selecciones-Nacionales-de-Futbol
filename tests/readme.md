@@ -1,5 +1,11 @@
 # Testing & Quality Assurance
-This directory houses the scripts dedicated to validating the pipeline's stability and data quality standards.
+
+This directory contains lightweight validation and testing scripts used to verify the correct behavior of the football data pipeline during development and deployment.
 
 ### Contents
-* **Unit Tests**: Python scripts to validate data constraints (e.g., checking that goals remain between 0 and 20 and avoiding null keys).
+
+* **API Extraction Tests**: Simple Python scripts used to validate API-Football connectivity, response structure, and historical match retrieval for selected national teams.
+
+* **S3 Upload Tests**: Validation scripts used to confirm successful uploads of generated CSV datasets into the Amazon S3 Bronze layer.
+
+* **Athena Query Tests**: Initial SQL queries used to verify table availability, schema detection, and successful analytical querying over the Silver datasets.
