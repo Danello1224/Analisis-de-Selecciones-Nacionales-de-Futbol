@@ -14,13 +14,13 @@ The platform was designed to centralize, process, transform, and visualize footb
 
 Build a scalable sports analytics pipeline capable of:
 
-- Collecting historical international football match data
-- Processing and cleaning raw datasets
-- Structuring information into analytical Data Lake layers
-- Generating football performance metrics
-- Enabling SQL-based analytical queries
-- Supporting scouting-oriented statistical analysis
-- Visualizing football insights through dashboards
+- Collecting historical international football match data.
+- Processing and cleaning raw datasets.
+- Structuring information into analytical Data Lake layers.
+- Generating football performance metrics.
+- Enabling SQL-based analytical queries.
+- Supporting scouting-oriented statistical analysis.
+- Visualizing football insights through dashboards.
 
 ---
 
