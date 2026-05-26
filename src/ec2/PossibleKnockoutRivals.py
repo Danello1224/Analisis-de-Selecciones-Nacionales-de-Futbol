@@ -22,7 +22,8 @@ teams = {
     "england": 10,
     "croatia": 3,
     "sweden": 5,
-    "norway": 1090
+    "norway": 1090,
+    "germany": 25
 }
 
 # Minimum accepted date for matches
