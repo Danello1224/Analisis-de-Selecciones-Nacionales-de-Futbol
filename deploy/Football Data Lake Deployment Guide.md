@@ -4,7 +4,9 @@
 
 This document describes the complete process required to replicate the Football Data Lake Project environment using AWS cloud services through the AWS Management Console.
 
-The project focuses on the ingestion, transformation, storage, and analytical processing of international football match data and national team statistics. The architecture integrates Amazon S3, AWS Glue, Amazon Athena, and EC2 to support scalable football analytics workflows and dashboard visualization.
+The project focuses on the ingestion, transformation, storage, and analytical processing of international football match data to support scouting and statistical analysis of potential opponents for the Mexican National Team ahead of the FIFA World Cup 2026.
+
+The architecture integrates Amazon S3, AWS Glue, Amazon Athena, and Amazon EC2 to support scalable football data engineering workflows and analytical metric generation.
 
 The deployment process documented here follows the same implementation workflow used during the original project development.
 
@@ -12,15 +14,16 @@ The deployment process documented here follows the same implementation workflow 
 
 # Project Objective
 
-The main objective of the project is to centralize and process football match datasets to generate analytical metrics and visualizations related to national soccer teams.
+The main objective of the project is to centralize and process historical football match datasets to generate analytical metrics related to national team performance and potential World Cup rivals.
 
 The solution supports:
 
 - Historical football match analysis
-- Team performance monitoring
-- football statistics processing
-- Query optimization for analytics
-- Dashboard-based visualization and reporting
+- National team performance monitoring
+- Football statistics processing
+- Query optimization using partitioned parquet datasets
+- Scouting-oriented analytical workflows
+- Opponent comparison analysis
 
 ---
 
@@ -31,10 +34,9 @@ The solution is composed of the following AWS services:
 | Service | Purpose |
 |---|---|
 | Amazon S3 | Centralized storage for raw and processed football datasets |
-| AWS Glue | ETL processing, crawlers, and Data Catalog management |
+| AWS Glue | PySpark-based cleaning and transformation of football datasets |
 | Amazon Athena | SQL querying service for analytical processing |
-| Amazon EC2 | Environment configuration and operational support |
-| Dashboard Layer | Football metrics visualization and reporting |
+| Amazon EC2 | Execution of Python ingestion scripts and dataset upload automation |
 
 ---
 
@@ -45,15 +47,13 @@ The project follows a layered Data Lake architecture:
 ```text
 Raw Football Data
         ↓
-Bronze Layer (Raw Files)
+Bronze Layer (Raw CSV Files)
         ↓
-Silver Layer (Cleaned and Structured Data)
+Silver Layer (Cleaned Parquet Data)
         ↓
-Gold Layer (Analytics and Metrics)
+Athena SQL Queries
         ↓
-Athena Queries
-        ↓
-Football Dashboard
+Gold Metrics Layer
 ```
 
 ---
@@ -63,15 +63,36 @@ Football Dashboard
 ```text
 project-root/
 ├── dashboard/
-├── deploy/
 ├── docs/
-├── iac/
+├── deploy/
+├── tests/
 ├── img/
 ├── ppt/
 ├── src/
-├── tests/
 └── README.md
 ```
+
+---
+
+# Football Data Source
+
+The project uses API-Football as the primary external data source for retrieving historical international football matches and national team statistics.
+
+The analyzed national teams include:
+
+- Mexico
+- South Africa
+- South Korea
+- Czech Republic
+- Canada
+- Qatar
+- Switzerland
+- Bosnia & Herzegovina
+- England
+- Croatia
+- Sweden
+- Norway
+- Germany
 
 ---
 
@@ -88,7 +109,7 @@ The project processes historical football datasets containing information such a
 - Team performance indicators
 - Tournament participation records
 
-The processing pipeline transforms raw football data into optimized analytical datasets used for dashboard visualization and querying.
+The processing pipeline transforms raw football data into optimized analytical datasets used for scouting analysis and statistical querying.
 
 ---
 
@@ -111,7 +132,7 @@ Before starting the replication process, ensure the following requirements are a
 - Web browser
 - Visual Studio Code
 - Git
-- Power BI Desktop (if dashboard visualization is required)
+- Python 3
 
 ---
 
@@ -158,28 +179,9 @@ s3://football-data-lake/
 
 | Layer | Purpose |
 |---|---|
-| Bronze | Raw datasets without transformation |
-| Silver | Cleaned and normalized datasets |
-| Gold | Aggregated analytics-ready datasets |
-
----
-
-## Upload Raw Football Datasets
-
-Upload historical football datasets into the Bronze layer.
-
-Examples may include:
-
-- International match records
-- Team statistics
-- FIFA-related datasets
-- Tournament datasets
-
-Example:
-
-```text
-s3://football-data-lake/bronze/
-```
+| Bronze | Raw historical football datasets in CSV format |
+| Silver | Cleaned and partitioned parquet datasets |
+| Gold | Analytical football metrics generated from Athena queries |
 
 ---
 
@@ -204,7 +206,6 @@ Access the instance using:
 
 - EC2 Instance Connect
 - SSH
-- Remote Desktop (if Windows)
 
 ---
 
@@ -213,19 +214,59 @@ Access the instance using:
 Install the required tools:
 
 - Python
-- Git
+- Requests
 - AWS CLI
-- Data processing libraries if required
-
-The EC2 instance is used for:
-- Script execution
-- Dataset preparation
-- Environment management
-- Operational validation
+- Boto3
+- Git
 
 ---
 
-# Step 4 — Configure AWS Glue
+## Execute Football Ingestion Scripts
+
+The EC2 instance is used to execute Python scripts responsible for:
+
+- Connecting to API-Football
+- Retrieving historical football match data
+- Generating CSV datasets
+- Uploading datasets to Amazon S3 Bronze layer
+
+The ingestion process retrieves matches from August 2022 onward for each analyzed national team.
+
+Example datasets generated:
+
+```text
+historico_mexico.csv
+historico_south_korea.csv
+historico_england.csv
+```
+
+---
+
+# Step 4 — Upload Raw Datasets to S3 Bronze Layer
+
+After generating the CSV datasets from EC2:
+
+1. Navigate to Amazon S3
+2. Open the Data Lake bucket
+3. Upload the generated CSV files into the Bronze layer
+
+Example structure:
+
+```text
+bronze/mexico/historico_mexico.csv
+bronze/england/historico_england.csv
+bronze/croatia/historico_croatia.csv
+```
+
+Verify:
+
+- CSV files uploaded successfully
+- Folder organization by country
+- Correct file naming convention
+
+---
+
+# Step 5 — Configure AWS Glue
 
 ## Create Glue Database
 
@@ -241,14 +282,14 @@ football_data_lake_db
 
 ---
 
-# Step 5 — Configure Glue Crawlers
+# Step 6 — Configure Glue Crawlers
 
 ## Create Crawlers
 
 1. Navigate to "Crawlers"
-2. Create a crawler for each layer
+2. Create a crawler for the Silver layer
 3. Configure:
-   - S3 data source
+   - S3 parquet source
    - IAM role
    - Database destination
 
@@ -256,23 +297,24 @@ football_data_lake_db
 
 ## Execute Crawlers
 
-Run crawlers to populate the Glue Data Catalog.
+Run crawlers to detect parquet schemas stored in the Silver layer.
 
 The crawlers automatically detect:
 
 - Dataset schemas
 - Column structures
 - File formats
-- Partitions
+- Partitions by year
 
 Verify:
+
 - Tables created successfully
 - Schemas generated correctly
 - Metadata available in Athena
 
 ---
 
-# Step 6 — Configure ETL Jobs in AWS Glue
+# Step 7 — Configure ETL Jobs in AWS Glue
 
 ## ETL Workflow Overview
 
@@ -281,26 +323,23 @@ The ETL process transforms raw football datasets into structured analytical data
 The scripts are responsible for:
 
 - Data cleaning
+- UTF-8 normalization
 - Null value handling
-- Team normalization
-- Statistical aggregation
-- Match result processing
-- Metrics generation
+- Duplicate removal
+- Year partitioning
+- Parquet conversion
 
 ---
 
-## Football Metrics Generated
+## Silver Layer Structure
 
-The ETL process generates metrics such as:
+The Silver layer stores partitioned parquet datasets organized by year to optimize Athena query performance.
 
-- Goals scored
-- Goals conceded
-- Match wins
-- Match losses
-- Draws
-- Total fixtures
-- Team performance ratios
-- Historical match statistics
+Example:
+
+```text
+silver/mexico/2025/
+```
 
 ---
 
@@ -321,18 +360,18 @@ The ETL process generates metrics such as:
 Run the ETL jobs to process the datasets from:
 
 ```text
-Bronze → Silver → Gold
+Bronze → Silver
 ```
 
-Processed datasets should be stored in:
+Processed parquet datasets should be stored in:
 
 ```text
-s3://Football-data-lake/gold/
+s3://football-data-lake/silver/
 ```
 
 ---
 
-# Step 7 — Configure Amazon Athena
+# Step 8 — Configure Amazon Athena
 
 ## Configure Query Results
 
@@ -340,7 +379,7 @@ s3://Football-data-lake/gold/
 2. Configure the query result location:
 
 ```text
-s3://Football-data-lake/athena-results/
+s3://football-data-lake/athena-results/
 ```
 
 ---
@@ -348,76 +387,71 @@ s3://Football-data-lake/athena-results/
 ## Validate Glue Integration
 
 Verify Athena detects:
+
 - Glue databases
 - Tables
 - Metadata
-- Partitions
+- Year partitions
 
 ---
 
 ## Execute Football Analytics Queries
 
-Run analytical SQL queries against the Gold layer datasets.
+Run analytical SQL queries against the Silver datasets.
+
+The Athena queries generate metrics such as:
+
+- Wins
+- Draws
+- Losses
+- Win percentage
+- Goals scored
+- Goals conceded
+- Goals per match averages
 
 Example:
 
 ```sql
-SELECT team,
-       SUM(goals_scored) AS total_goals
-FROM gold_team_statistics
-GROUP BY team
-ORDER BY total_goals DESC;
+SELECT
+    COUNT(*) AS matches
+FROM "2silver"
+WHERE local = 'MEXICO'
+   OR visitante = 'MEXICO';
 ```
 
-Additional queries may include:
+---
 
-- Team ranking analysis
-- Historical performance metrics
-- Match outcome distributions
-- Goal comparison statistics
+# Step 9 — Generate Gold Metrics Layer
+
+The Gold layer contains analytical metrics generated from Athena SQL queries.
+
+These datasets are focused on:
+
+- National team performance analysis
+- Rival comparison
+- Historical football statistics
+- Scouting-oriented metrics
+
+The resulting datasets can be exported or reused for additional analysis.
 
 ---
 
-# Step 8 — Dashboard Configuration
+# Step 10 — Optional Dashboard Prototype
 
-## Overview
+An optional dashboard prototype was developed for visualization purposes using HTML, CSS, JavaScript, and AI-assisted design tools.
 
-The dashboard layer provides visual analysis and monitoring capabilities for football statistics and national team performance.
-
-The dashboard integrates processed datasets generated through AWS Glue and queried using Athena.
+The dashboard was intended as a complementary visualization layer for displaying football statistics and analytical metrics.
 
 ---
 
-## Dashboard Features
-
-The dashboard may include:
-
-- Team performance metrics
-- Goals scored and conceded
-- Historical trends
-- Match result distributions
-- Country comparisons
-- Tournament analytics
-
----
-
-## Connect Dashboard to Athena
-
-Configure the dashboard data source using:
-
-- Athena query outputs
-- Gold analytical datasets
-- Exported query results
-
----
-
-# Step 9 — Validation and Testing
+# Step 11 — Validation and Testing
 
 ## Infrastructure Validation
 
 Verify:
+
 - S3 buckets operational
-- Glue crawlers executed successfully
+- Glue jobs executed successfully
 - Athena queries functional
 - EC2 instance accessible
 
@@ -426,20 +460,11 @@ Verify:
 ## Data Validation
 
 Verify:
+
 - Raw datasets uploaded correctly
 - ETL transformations completed successfully
-- Gold layer generated properly
+- Silver layer generated properly
 - Metrics calculated accurately
-
----
-
-## Dashboard Validation
-
-Verify:
-- Visualizations load correctly
-- Filters function properly
-- Metrics display expected values
-- Queries return valid information
 
 ---
 
@@ -450,6 +475,7 @@ Verify:
 ### Athena Tables Not Appearing
 
 Solution:
+
 - Re-run Glue Crawlers
 - Verify S3 paths
 - Validate Glue permissions
@@ -459,8 +485,9 @@ Solution:
 ### ETL Job Failures
 
 Solution:
+
 - Review Glue Job logs
-- Validate dataset structure
+- Validate parquet structure
 - Verify IAM permissions
 
 ---
@@ -468,7 +495,8 @@ Solution:
 ### Incorrect Football Metrics
 
 Solution:
-- Validate transformation scripts
+
+- Validate SQL queries
 - Review aggregation logic
 - Verify dataset normalization
 
@@ -477,6 +505,7 @@ Solution:
 ### Access Denied Errors
 
 Solution:
+
 - Review IAM policies
 - Validate S3 bucket permissions
 - Confirm service access configuration
@@ -494,3 +523,10 @@ The project environment should follow cloud security best practices:
 - Maintain credential confidentiality
 
 ---
+
+# Final Notes
+
+This project demonstrates the implementation of a cloud-based sports analytics pipeline using AWS services for football data engineering and scouting analysis.
+
+The architecture prioritizes simplicity, scalability, low operational cost, and efficient analytical querying for historical football datasets.
+
